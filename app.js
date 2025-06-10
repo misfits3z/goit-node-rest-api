@@ -12,6 +12,11 @@ app.use(express.json());
 
 app.use("/api/contacts", contactsRouter);
 
+app.get("/", (req, res) => {
+  res.send("Welcome to Contacts API. Use /api/contacts");
+});
+
+
 app.use((_, res) => {
   res.status(404).json({ message: "Route not found" });
 });
