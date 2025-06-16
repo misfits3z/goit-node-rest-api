@@ -22,7 +22,9 @@ try {
     
 } catch (error) {
     console.log("Failed connect database")
-    console.lo(error)
+    console.log(error.message)
+    process.exit(1); 
+
     
 }
 

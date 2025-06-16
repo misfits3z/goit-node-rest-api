@@ -13,7 +13,7 @@ export const getOneContact = ctrlWrapper(async (req, res) => {
     const result = await contactsServices.getContactById(id);
 
     if (!result) {
-        throw HttpError(404, `Contact with id=${id} not found`);
+        throw HttpError(404, "Not found");
     }
 
     res.json(result);
@@ -23,7 +23,7 @@ export const deleteContact = ctrlWrapper(async (req, res) => {
     const { id } = req.params;
     const result = await contactsServices.removeContact(id);
     if (!result) {
-        throw HttpError(404, `Contact with id=${id} not found`);
+        throw HttpError(404, "Not found");
     }
 
     // res.status(204).send();
@@ -46,9 +46,27 @@ export const updateContact = ctrlWrapper(async (req, res) => {
     const result = await contactsServices.updateContactById(id, req.body);
 
     if (!result) {
-      throw HttpError(404, `Contact with id=${id} not found`);
+      throw HttpError(404, "Not found");
     }
 
     res.json(result);
 })
 
+export const updateStatusContact = ctrlWrapper(async (req, res) => {
+  const { contactId } = req.params;
+
+  if (!req.body || typeof req.body.favorite !== "boolean") {
+    throw HttpError(400, "Missing field favorite");
+  }
+
+  const result = await contactsServices.updateStatusContact(
+    contactId,
+    req.body
+  );
+
+  if (!result) {
+    throw HttpError(404, "Not found");
+  }
+
+  res.status(200).json(result);
+});
