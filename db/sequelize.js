@@ -14,18 +14,14 @@ const sequelize = new Sequelize({
     ssl: process.env.DB_SSL === "true",
   },
 });
-  
 
 try {
-    await sequelize.authenticate();
-    console.log("Database connection successful");
-    
+  await sequelize.authenticate();
+  console.log("Database connection successful");
 } catch (error) {
-    console.log("Failed connect database")
-    console.log(error.message)
-    process.exit(1); 
-
-    
+  console.log("Failed connect database");
+  console.log(error.message);
+  process.exit(1);
 }
 
 export default sequelize;

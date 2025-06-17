@@ -3,7 +3,7 @@ import morgan from "morgan";
 import cors from "cors";
 
 import contactsRouter from "./routes/contactsRouter.js";
-import './db/ sequelize.js'
+import './db/sequelize.js'
 
 const app = express();
 
