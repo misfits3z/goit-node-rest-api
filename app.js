@@ -3,7 +3,10 @@ import morgan from "morgan";
 import cors from "cors";
 
 import contactsRouter from "./routes/contactsRouter.js";
+import authRouter from "./routes/authRouter.js";
+
 import './db/sequelize.js'
+import Type from "./db/Type.js";
 
 const app = express();
 
@@ -12,6 +15,7 @@ app.use(cors());
 app.use(express.json());
 
 app.use("/api/contacts", contactsRouter);
+app.use("/api/auth", authRouter);
 
 app.get("/", (req, res) => {
   res.send("Welcome to Contacts API. Use /api/contacts");

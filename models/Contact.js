@@ -1,5 +1,7 @@
 import { DataTypes } from "sequelize";
 import sequelize from "../db/sequelize.js";
+import User from "./User.js";
+
 
 const Contact = sequelize.define("contact", {
   name: {
@@ -20,10 +22,16 @@ const Contact = sequelize.define("contact", {
   },
   owner: {
     type: DataTypes.INTEGER,
-    allowNull: false,
+    allowNull: true,
+    references: {
+      model: User,
+      key: "id",
+    },
+    onUpdate: "CASCADE",
+    onDelete: "SET NULL",
   },
 });
 
-// Contact.sync();
+// Contact.sync({alter: true});
 
 export default Contact;
