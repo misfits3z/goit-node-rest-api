@@ -1,14 +1,21 @@
 import { DataTypes } from "sequelize";
 import sequelize from "../db/sequelize.js";
+import { emailRegexp, passwordRegexp } from "../constants/auth.js";
 
 const User = sequelize.define("user", {
   password: {
     type: DataTypes.STRING,
     allowNull: false,
+    validate: {
+      is: passwordRegexp,
+    },
   },
   email: {
     type: DataTypes.STRING,
     allowNull: false,
+    validate: {
+      is: emailRegexp,
+    },
     unique: true,
   },
   subscription: {
@@ -23,5 +30,6 @@ const User = sequelize.define("user", {
 });
 
 // User.sync();
+// User.sync({ alter: true });
 
 export default User;

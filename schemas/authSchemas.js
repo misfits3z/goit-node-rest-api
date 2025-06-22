@@ -1,7 +1,8 @@
 import Joi from "joi";
+import { emailRegexp, passwordRegexp } from "../constants/auth.js";
 
 export const authRegisterSchema = Joi.object({
-  email: Joi.string().email().required().messages({
+  email: Joi.string().pattern(emailRegexp).required().messages({
     "any.required": "Email is required",
     "string.email": "Email must be a valid email",
     "string.empty": "Email cannot be empty",
@@ -9,7 +10,7 @@ export const authRegisterSchema = Joi.object({
   password: Joi.string()
     .min(8)
     .max(24)
-    .pattern(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).+$/)
+    .pattern(passwordRegexp)
     .required()
     .messages({
       "any.required": "Password is required",
