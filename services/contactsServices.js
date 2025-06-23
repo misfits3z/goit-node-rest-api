@@ -1,23 +1,20 @@
 import fs from "fs/promises";
 import path from "path";
-import Contact from "../db/Contact.js";
+import Contact from "../models/Contact.js";
 
 const contactsPath = path.resolve("db", "contacts.json");
 
 const updateContact = (contacts) =>
   fs.writeFile(contactsPath, JSON.stringify(contacts, null, 2));
 
-
 async function listContacts() {
   const contacts = await Contact.findAll();
-  return contacts
-  
+  return contacts;
 }
 
 async function getContactById(contactId) {
   return await Contact.findByPk(contactId);
 }
-
 
 async function removeContact(contactId) {
   const contact = await Contact.findByPk(contactId);
@@ -26,11 +23,9 @@ async function removeContact(contactId) {
   return contact;
 }
 
-
 async function addContact(payload) {
-  const contact = await Contact.create(payload)
-  return contact
-  
+  const contact = await Contact.create(payload);
+  return contact;
 }
 
 async function updateContactById(id, data) {
@@ -54,7 +49,5 @@ export {
   removeContact,
   addContact,
   updateContactById,
-  updateStatusContact
+  updateStatusContact,
 };
-  
-  
