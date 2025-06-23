@@ -21,3 +21,4 @@ export const authRegisterSchema = Joi.object({
         "Password must contain at least one uppercase letter, one lowercase letter, and one digit",
     }),
 });
+

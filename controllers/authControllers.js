@@ -14,7 +14,7 @@ export const registerController = ctrlWrapper(async (req, res) => {
     
 })
 
-export const loginController = ctrlWrapper(async (res, req) => {
+export const loginController = ctrlWrapper(async (req, res) => {
     const { token, user } = await authServices.loginUser(req.body);
     res.json({
         token,
@@ -25,7 +25,7 @@ export const loginController = ctrlWrapper(async (res, req) => {
     })
 });
 
-export const getCurrentUser = ctrlWrapper(async (res, req) => {
+export const getCurrentUser = ctrlWrapper(async (req, res) => {
   const { email, subscription } = req.user;
   res.json({
     email,
@@ -33,13 +33,13 @@ export const getCurrentUser = ctrlWrapper(async (res, req) => {
   });
 });
 
-export const logoutController = ctrlWrapper(async (res, req) => { 
+export const logoutController = ctrlWrapper(async (req, res) => { 
     const { id } = req.user;
     await authServices.logoutUser(id);
     res.status(204).send();
 });
 
-export const updateUserSubscription = ctrlWrapper(async (res, req) => {
+export const updateUserSubscription = ctrlWrapper(async (req, res) => {
     const { id } = req.user;
     const { subscription } = req.body;
     const updatedUser = await authServices.updateSubscription(id, subscription);
