@@ -36,9 +36,12 @@ export const loginUser = async (payload = {}) => {
     id: existingUser.id,
   };
 
-  const token = jwt.sign(tokenPayload, JWT_SECRET, { expiresIn: "24h" });
- 
+    const token = jwt.sign(tokenPayload, JWT_SECRET, { expiresIn: "24h" });
+    existingUser.token = token
+    await existingUser.save()
+    
 
+    
   return {
     token,
     user: existingUser,
@@ -48,8 +51,9 @@ export const loginUser = async (payload = {}) => {
 export const logoutUser = async (userId) => {
   const user = await findUser({ id: userId });
   if (!user || !user.token) {
-    throw HttpError(404, "Not found");
+    throw HttpError(401, "Not found");
   }
+  
   await user.update({ token: null });
 };
 

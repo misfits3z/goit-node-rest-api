@@ -8,6 +8,7 @@ const { JWT_SECRET } = process.env;
 const authenticate = async (req, res, next) => {
 
     const { authorization } = req.headers;
+    console.log("AUTHORIZATION HEADER:", req.headers.authorization);
     if (!authorization) {
       return next(HttpError(401, "Not authorized"));
     }
@@ -23,10 +24,6 @@ const authenticate = async (req, res, next) => {
     }
     const user = await findUser({ id: payload.id });
     if (!user) {
-      return next(HttpError(401, "Not authorized"));
-    }
-
-    if (!user.token || user.token !== token) {
       return next(HttpError(401, "Not authorized"));
     }
     req.user = user;

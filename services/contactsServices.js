@@ -7,17 +7,21 @@ const contactsPath = path.resolve("db", "contacts.json");
 const updateContact = (contacts) =>
   fs.writeFile(contactsPath, JSON.stringify(contacts, null, 2));
 
-async function listContacts() {
-  const contacts = await Contact.findAll();
+async function listContacts(query) {
+  const contacts = await Contact.findAll({
+    where: query,
+  });
   return contacts;
 }
 
-async function getContactById(contactId) {
-  return await Contact.findByPk(contactId);
+async function getContactById(query) {
+  return await Contact.findOne({
+    where: query
+  });
 }
 
-async function removeContact(contactId) {
-  const contact = await Contact.findByPk(contactId);
+async function removeContact(query) {
+  const contact = await getContactById(query);
   if (!contact) return null;
   await contact.destroy();
   return contact;
@@ -28,15 +32,15 @@ async function addContact(payload) {
   return contact;
 }
 
-async function updateContactById(id, data) {
-  const contact = await Contact.findByPk(id);
+async function updateContactById(query, data) {
+  const contact = await getContactById(query);
   if (!contact) return null;
   await contact.update(data);
   return contact;
 }
 
-async function updateStatusContact(contactId, body) {
-  const contact = await Contact.findByPk(contactId);
+async function updateStatusContact(query, body) {
+  const contact = await getContactById(query);
   if (!contact) return null;
 
   await contact.update({ favorite: body.favorite });
