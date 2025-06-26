@@ -10,11 +10,17 @@ import {
 } from "../controllers/authControllers.js";
  
 import authenticate from "../middlewares/authenticate.js";
+import upload from "../middlewares/upload.js";
 
 
 const authRouter = express.Router();
 
-authRouter.post("/register", validateBody(authRegisterSchema),registerController)
+authRouter.post(
+  "/register",
+  upload.single("avatar"),
+  validateBody(authRegisterSchema),
+  registerController
+);
 
 authRouter.post(
   "/login",
@@ -25,5 +31,13 @@ authRouter.post(
 authRouter.get("/current", authenticate, getCurrentUser);
 
 authRouter.post("/logout", authenticate, logoutController)
+
+// authRouter.patch(
+//   "/avatars",
+//   authenticate,
+//   upload.single("avatar"),
+//   validateFile,
+//   authController.updateAvatar
+// );
 
 export default authRouter
