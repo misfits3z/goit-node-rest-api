@@ -2,17 +2,14 @@ import express from "express";
 import morgan from "morgan";
 import cors from "cors";
 import "dotenv/config";
+import path from "path"
 
 import contactsRouter from "./routes/contactsRouter.js";
 import authRouter from "./routes/authRouter.js";
 
 import './db/sequelize.js'
-// import Type from "./db/Type.js";
-import path from "path";
-import { fileURLToPath } from "url";
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
+import { rootDir } from "./utils/dirname.js";
 
 
 const app = express();
@@ -21,7 +18,7 @@ app.use(morgan("tiny"));
 app.use(cors());
 app.use(express.json());
 
-app.use(express.static(path.join(__dirname, "public")));
+app.use(express.static(path.join(rootDir, "public")));
 
 app.use("/api/contacts", contactsRouter);
 app.use("/api/auth", authRouter);

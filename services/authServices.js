@@ -2,6 +2,7 @@ import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import User from "../models/User.js";
 import HttpError from "../helpers/HttpError.js";
+import gravatar from "gravatar";
 
 const { JWT_SECRET } = process.env;
 
@@ -16,7 +17,10 @@ export const registerUser = async payload => {
     throw HttpError(409, "Email in use");
   }
   const hashedPassword = await bcrypt.hash(payload.password, 10);
-  return User.create({ ...payload, password: hashedPassword });
+
+  const avatarURL = gravatar.url(email, { s: "250", d: "robohash" }, true);
+
+  return User.create({ ...payload, password: hashedPassword, avatarURL});
 };
 
 export const loginUser = async (payload = {}) => {
@@ -65,3 +69,13 @@ export const updateSubscription = async (userId, subscription) => {
   await user.update({ subscription });
   return user;
 };
+
+export const updateAvatar = async (userId, avatarURL) => {
+  const user = await findUser({ id: userId });
+  if (!user) {
+    throw HttpError(404, "Not found");
+  }
+  await user.update({ avatarURL });
+  return user;
+};
+
