@@ -1,5 +1,7 @@
 import ctrlWrapper from "../helpers/ctrlWrapper.js";
 import * as authServices from "../services/authServices.js"
+import { rootDir } from "../utils/dirname.js";
+import { saveAvatarToPublic } from "../helpers/saveAvatarFiles.js";
 
 export const registerController = ctrlWrapper(async (req, res) => {
     const  newUser  = await authServices.registerUser(req.body);
@@ -8,6 +10,7 @@ export const registerController = ctrlWrapper(async (req, res) => {
       user: {
         email: newUser.email,
         subscription: newUser.subscription,
+        avatarUrl: user.avatarURL,
       },
     });
 
@@ -17,12 +20,13 @@ export const registerController = ctrlWrapper(async (req, res) => {
 export const loginController = ctrlWrapper(async (req, res) => {
     const { token, user } = await authServices.loginUser(req.body);
     res.json({
-        token,
-        user: {
-            email: user.email,
-            subscription: user.subscription,
-        },
-    })
+      token,
+      user: {
+        email: user.email,
+        subscription: user.subscription,
+        avatarUrl: user.avatarURL,
+      },
+    });
 });
 
 export const getCurrentUser = ctrlWrapper(async (req, res) => {
@@ -47,4 +51,21 @@ export const updateUserSubscription = ctrlWrapper(async (req, res) => {
       email: updatedUser.email,
       subscription: updatedUser.subscription,
     });
+});
+
+export const updateUserAvatar = ctrlWrapper(async (req, res) => {
+  const { id } = req.user;
+
+  if (!req.file) {
+    throw HttpError(400, "Avatar file is required");
+  }
+
+  const tempUploadPath = req.file.path;
+  const originalName = req.file.originalname
+
+  const avatarURL = await saveAvatarToPublic(id, tempUploadPath, originalName);
+  const updatedUser = await authServices.updateAvatar(id, avatarURL);
+  res.json({
+    avatarURL
+  });
 });

@@ -1,8 +1,8 @@
 import multer from "multer";
-import HttpError from "../helpers/HttpError";
-import { resovle } from "node:path"
+import HttpError from "../helpers/HttpError.js";
+import { resolve } from "node:path";
 
-const tempDir = resovle("temp")
+const tempDir = resolve("temp")
 
 const storage = multer.diskStorage({
   destination: tempDir,
