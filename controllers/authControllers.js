@@ -10,7 +10,7 @@ export const registerController = ctrlWrapper(async (req, res) => {
       user: {
         email: newUser.email,
         subscription: newUser.subscription,
-        avatarUrl: user.avatarURL,
+        avatarUrl: newUser.avatarURL,
       },
     });
 
@@ -30,10 +30,11 @@ export const loginController = ctrlWrapper(async (req, res) => {
 });
 
 export const getCurrentUser = ctrlWrapper(async (req, res) => {
-  const { email, subscription } = req.user;
+  const { email, subscription, avatarURL } = req.user;
   res.json({
     email,
     subscription,
+    avatarURL,
   });
 });
 
