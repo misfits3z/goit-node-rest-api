@@ -3,12 +3,28 @@ import jwt from "jsonwebtoken";
 import User from "../models/User.js";
 import HttpError from "../helpers/HttpError.js";
 import gravatar from "gravatar";
+import { sendEmail } from "../helpers/sendEmail.js";
+import { nanoid } from "nanoid";
+import { verifyToken } from "../helpers/jwt.js";
 
 const { JWT_SECRET } = process.env;
+const BASE_URL = process.env.BASE_URL;
 
 export const findUser = query => User.findOne({
     where: query,
 })
+
+export const sendVerificationEmail = async (to, verificationToken) => {
+  const verifyLink = `${BASE_URL}/api/auth/verify/:${verificationToken}`;
+  const message = {
+    from: process.env.EMAIL_USER,
+    to,
+    subject: "Please, verify your email",
+    html: `<p>Для підтвердження email перейдіть за <a href="${verifyLink}">посиланням</a></p>`,
+  };
+  return sendEmail(message)
+
+};
 
 export const registerUser = async payload => {
   const { email, password } = payload;
@@ -18,10 +34,38 @@ export const registerUser = async payload => {
   }
   const hashedPassword = await bcrypt.hash(payload.password, 10);
 
+  const verificationToken = nanoid()
+
   const avatarURL = gravatar.url(email, { s: "250", d: "robohash" }, true);
 
-  return User.create({ ...payload, password: hashedPassword, avatarURL});
+  await sendEmail(sendVerificationEmail(verificationToken, email))
+
+  return User.create({ ...payload, password: hashedPassword, avatarURL, verificationToken});
 };
+
+export const verifyEmail = async (verifyToken) => {
+  const user = await findUser({ verifyToken });
+  if (!user) {
+    throw HttpError(404, "No found");
+  }
+  return await user.update(
+    { verify: true, verifyToken: null },
+    {returning: true}
+  )
+}
+
+export const resendVerificationEmail = async (email) => {
+  const user = await findUser({ email });
+  if (!user) {
+    throw HttpError(404, "Not found");
+  }
+  if (user.verify) {
+    throw HttpError(400, "Verification has already been passed");
+  }
+
+  await sendEmail(sendVerificationEmail(user.verificationToken, email));
+};
+  
 
 export const loginUser = async (payload = {}) => {
   const { email, password } = payload;
