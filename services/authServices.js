@@ -43,23 +43,23 @@ export const registerUser = async payload => {
   return User.create({ ...payload, password: hashedPassword, avatarURL, verificationToken});
 };
 
-export const verifyEmail = async (verifyToken) => {
-  const user = await findUser({ verifyToken });
+export const verifyEmail = async (verificationToken) => {
+  const user = await findUser({ verificationToken });
   if (!user) {
     throw HttpError(404, "No found");
   }
   return await user.update(
-    { verify: true, verifyToken: null },
-    {returning: true}
-  )
-}
+    { isVerified: true, verificationToken: null },
+    { returning: true }
+  );
+};
 
 export const resendVerificationEmail = async (email) => {
   const user = await findUser({ email });
   if (!user) {
     throw HttpError(404, "Not found");
   }
-  if (user.verify) {
+  if (user.isVerified) {
     throw HttpError(400, "Verification has already been passed");
   }
 
