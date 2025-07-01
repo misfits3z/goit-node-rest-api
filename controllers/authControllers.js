@@ -70,3 +70,19 @@ export const updateUserAvatar = ctrlWrapper(async (req, res) => {
     avatarURL
   });
 });
+
+export const verifyUserEmail = ctrlWrapper(async (req, res) => {
+  const { verificationToken } = req.params;
+
+  await  authServices.verifyEmail(verificationToken);
+
+  res.status(200).json({ message: "Verification successful" });
+});
+
+export const resendVerificationEmail = ctrlWrapper(async (req, res) => {
+  const { email } = req.body;
+  await authServices.resendVerificationEmail(email);
+  res.json({
+    message: "Verification email sent",
+  });
+});
