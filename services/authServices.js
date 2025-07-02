@@ -15,12 +15,14 @@ export const findUser = query => User.findOne({
 })
 
 export const sendVerificationEmail = async (to, verificationToken) => {
-  const verifyLink = `${BASE_URL}/api/auth/verify/:${verificationToken}`;
+  const verifyLink = `${BASE_URL}/api/auth/verify/${verificationToken}`;
   const message = {
     from: process.env.EMAIL_USER,
     to,
     subject: "Please, verify your email",
-    html: `<p>Для підтвердження email перейдіть за <a href="${verifyLink}">посиланням</a></p>`,
+    html: `<p>To confirm your email, please follow this <a href="${verifyLink}">link</a></p>
+
+`,
   };
   return sendEmail(message)
 
@@ -38,7 +40,7 @@ export const registerUser = async payload => {
 
   const avatarURL = gravatar.url(email, { s: "250", d: "robohash" }, true);
 
-  await sendEmail(sendVerificationEmail(verificationToken, email))
+  await sendVerificationEmail(email, verificationToken)
 
   return User.create({ ...payload, password: hashedPassword, avatarURL, verificationToken});
 };
@@ -46,7 +48,7 @@ export const registerUser = async payload => {
 export const verifyEmail = async (verificationToken) => {
   const user = await findUser({ verificationToken });
   if (!user) {
-    throw HttpError(404, "No found");
+    throw HttpError(404, "User not found");
   }
   return await user.update(
     { isVerified: true, verificationToken: null },
@@ -56,14 +58,16 @@ export const verifyEmail = async (verificationToken) => {
 
 export const resendVerificationEmail = async (email) => {
   const user = await findUser({ email });
+
   if (!user) {
     throw HttpError(404, "Not found");
   }
+
   if (user.isVerified) {
     throw HttpError(400, "Verification has already been passed");
   }
 
-  await sendEmail(sendVerificationEmail(user.verificationToken, email));
+  await sendVerificationEmail(user.email, user.verificationToken);
 };
   
 
@@ -73,6 +77,10 @@ export const loginUser = async (payload = {}) => {
 
   if (!existingUser) {
     throw HttpError(401, "Email or password is wrong");
+  }
+
+  if (!existingUser.isVerified) {
+    throw HttpError(401, "Email not verified");
   }
 
   const passwordCompare = await bcrypt.compare(password, existingUser.password);
