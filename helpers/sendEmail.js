@@ -1,15 +1,15 @@
 import nodemailer from "nodemailer";
 import HttpError from "./HttpError.js";
 
-const { EMAIL_HOST, EMAIL_PASSWORD, EMAIL_PORT, EMAIL_USER, EMAIL_FROM, BASE_URL } = process.env
+const { EMAIL_HOST, EMAIL_PASSWORD, EMAIL_PORT, EMAIL_USER, EMAIL_FROM } = process.env
 
 const config = {
-  host: process.env.EMAIL_HOST,
-  port: Number(process.env.EMAIL_PORT),
-  secure: false, 
+  host: EMAIL_HOST,
+  port: Number(EMAIL_PORT),
+  secure: true, 
   auth: {
-    user: process.env.EMAIL_USER,
-    pass: process.env.EMAIL_PASSWORD,
+    user: EMAIL_USER,
+    pass: EMAIL_PASSWORD,
   },
 };
 const transporter = nodemailer.createTransport(config);
@@ -18,7 +18,7 @@ const transporter = nodemailer.createTransport(config);
 export const sendEmail = async (data) => {
     const emailOptions = {
     ...data,
-    from: `Contacts Api ${EMAIL_ADDRESS}`,
+    from: `Contacts Api <${EMAIL_FROM}>`,
   };
   try {
     const result = await transporter.sendMail(emailOptions);

@@ -2,6 +2,7 @@ import ctrlWrapper from "../helpers/ctrlWrapper.js";
 import * as authServices from "../services/authServices.js"
 import { rootDir } from "../utils/dirname.js";
 import { saveAvatarToPublic } from "../helpers/saveAvatarFiles.js";
+import HttpError from "../helpers/HttpError.js";
 
 export const registerController = ctrlWrapper(async (req, res) => {
     const  newUser  = await authServices.registerUser(req.body);
@@ -81,6 +82,11 @@ export const verifyUserEmail = ctrlWrapper(async (req, res) => {
 
 export const resendVerificationEmail = ctrlWrapper(async (req, res) => {
   const { email } = req.body;
+
+  if (!email) {
+    throw HttpError(400, "required field email");
+  }
+  
   await authServices.resendVerificationEmail(email);
   res.json({
     message: "Verification email sent",
